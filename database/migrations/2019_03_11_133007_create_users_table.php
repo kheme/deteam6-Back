@@ -40,7 +40,6 @@ class CreateUsersTable extends Migration
             'users',
             function (Blueprint $table) {
                 $table->bigInteger('id', true)->unsigned();
-                $table->bigInteger('account_id')->unsigned()->index();
                 $table->bigInteger('role_id')->unsigned()->index();
                 $table->string('name');
                 $table->string('email')->nullable()->unique();

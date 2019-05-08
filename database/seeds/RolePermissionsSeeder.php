@@ -13,18 +13,26 @@ class RolePermissionsSeeder extends Seeder
      */
     public function run()
     {
-        $permissions = Permission::select('id')->get();
+        $permissions = [
+            '.ignore',
+            'users.create',
+            'users.view',
+            'users.update',
+            'users.delete'
+        ];
 
-        foreach ($permissions as $permission) {
-            DB::table('role_permissions')
-                ->insert(
-                    [
-                        'role_id'       => 1,
-                        'permission_id' => $permission->id,
-                        'created_at'    => now(),
-                        'updated_at'    => now()
-                    ]
-                );
+        foreach ($permissions as $index => $permission) {
+            if ($index) {
+                DB::table('role_permissions')
+                    ->insert(
+                        [
+                            'role_id'       => 1,
+                            'permission_id' => $index,
+                            'created_at'    => now(),
+                            'updated_at'    => now()
+                        ]
+                    );
+            }
         }
 
         return "Roles Table Seeded!";

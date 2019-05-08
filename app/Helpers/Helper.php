@@ -167,23 +167,38 @@ function jsonSuccessResponse($message = 'Success', $code = 200)
  * Checks if a user has the required permission for a given module
  * 
  * @param model  $user       Model of user of interest
- * @param string $module     Module to check Eg. users
  * @param string $permission CRUD permission to check Eg. view
  * 
  * @author Okiemute Omuta <omuta.okiemute@gmail.com>
  *
  * @return string
  */
-function userHasPermission($user, $module, $permission)
+function userHasPermission($user, $permission)
 {
-    $view_roles_persmission = Permission::where('name', 'like', "%$module%")
-        ->where('name', 'like', "%$permission%")
-        ->pluck('id');
-        
     $has_permission = $user->permissions()
         ->selectRaw('permissions.id')
-        ->whereIn('permissions.id', $view_roles_persmission)
+        ->where('permissions.name', $permission)
         ->count();
     
     return (boolean) $has_permission;
+}
+
+/**
+ * Checks if a user lacks the required permission for a given module
+ * 
+ * @param model  $user       Model of user of interest
+ * @param string $permission CRUD permission to check Eg. view
+ * 
+ * @author Okiemute Omuta <omuta.okiemute@gmail.com>
+ *
+ * @return string
+ */
+function userLacksPermission($user, $permission)
+{
+    $has_permission = $user->permissions()
+        ->selectRaw('permissions.id')
+        ->where('permissions.name', $permission)
+        ->count();
+    
+    return (boolean) !$has_permission;
 }

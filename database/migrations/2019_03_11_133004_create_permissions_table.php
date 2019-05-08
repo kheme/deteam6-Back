@@ -46,17 +46,6 @@ class CreatePermissionsTable extends Migration
                 $table->timestamps();
             }
         );
-
-        Schema::table(
-            'permissions',
-            function (Blueprint $table) {
-                $table->foreign('group_id')
-                    ->references('id')
-                    ->on('permission_groups')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade');
-            }
-        );
     }
 
     /**

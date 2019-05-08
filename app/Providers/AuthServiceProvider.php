@@ -29,25 +29,6 @@ class AuthServiceProvider extends ServiceProvider
         
         Gate::resource('roles', 'App\Policies\RolePolicy');
         Gate::resource('users', 'App\Policies\UserPolicy');
-
-        // Gate::guessPolicyNamesUsing(
-        //     function ($modelClass) {
-        //         $policyName = class_basename($modelClass);
-
-        //         return "App\\Policies\\{$policyName}";
-        //     }
-        // );
-
-        // Gate::define('list.roles', 'App\Models\Policies\RolePolicy@listRoles');
-        // Gate::define('create.roles', 'App\Policies\RolePolicy@createRoles');
-        // Gate::define('update.roles', 'App\Policies\RolePolicy@updateRoles');
-        // Gate::define('delete.roles', 'App\Policies\RolePolicy@deleteRoles');
-
-        // Gate::define('list.roles', 'App\Policies\RolePolicy@listRoles');
-        // Gate::define('create.roles', 'App\Policies\RolePolicy@createRoles');
-        // Gate::define('update.roles', 'App\Policies\RolePolicy@updateRoles');
-        // Gate::define('delete.roles', 'App\Policies\RolePolicy@deleteRoles');
-
         
         Passport::tokensExpireIn(now()->addDays(30));
         Passport::refreshTokensExpireIn(now()->addDays(60));

@@ -7,7 +7,6 @@
  * @category  Contoller
  * @package   DigitalExplorers
  * @author    Okiemute Omuta <omuta.okiemute@gmail.com>
- 
  * @copyright 2019 Okiemute Omuta. All rights reserved.
  * @license   Unauthorized copying of this file, via any medium is highly prohibited.
  * @link      https://twitter.com/kheme
@@ -42,9 +41,19 @@ Route::middleware('auth:api')->prefix('app')->group(
                     'Frontend\UserController@viewUsers'
                 );
                 
-                Route::put(
+                Route::post(
                     '/',
                     'Frontend\UserController@createUser'
+                );
+
+                Route::put(
+                    '{user_id}',
+                    'Frontend\UserController@updateUser'
+                );
+
+                Route::delete(
+                    '{user_id}',
+                    'Frontend\UserController@deleteUser'
                 );
             }
         );

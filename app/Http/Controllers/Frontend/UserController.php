@@ -43,14 +43,17 @@ class UserController extends Controller
      */
     protected function viewUsers(Request $request, $user_id = null)
     {
-        if (auth()->user()->cannot('users.view')) {
+        $auth_user       = auth()->user();
+        $cant_view_users = userLacksPermission($auth_user, 'users.view');
+        
+        if ($cant_view_users) {
             return accessDenied('cannot view users');
         }
 
         $users = User::orderBy('users.created_at')
             ->join('roles', 'roles.id', 'users.role_id')
             ->selectRaw(
-                'users.id, users.name,
+                'users.id, users.name, users.email,
                 roles.id AS role_id, roles.name AS role_name'
             );
 
@@ -71,12 +74,9 @@ class UserController extends Controller
         }
 
         if ($user_id) {
-            $users = $users->where('users.id', $user_id);
+            $users = $users->where('users.id', $user_id)->first();
             
             if ($users) {
-                $users = $users->first();
-
-                dd($users->role());
             } else {
                 return jsonErrorResponse('User not found');
             }
@@ -85,6 +85,57 @@ class UserController extends Controller
         }
 
         return jsonSuccessResponse($users);
+    }
+
+    /**
+     * Return user details
+     * 
+     * @param Request $request HTTP request
+     * @param int     $user_id Primary key of user of interest
+     *
+     * @return void
+     */
+    protected function viewUserDetails(Request $request, $user_id)
+    {
+        $auth_user       = auth()->user();
+        $cant_view_users = userLacksPermission($auth_user, 'users.view');
+        
+        if ($cant_view_users) {
+            return accessDenied('cannot view users');
+        }
+
+        $user = User::orderBy('name')
+            ->join('roles', 'roles.id', 'users.role_id')
+            ->where('users.id', $user_id)
+            ->selectRaw(
+                'users.id, users.name, role_id, roles.name AS role_name'
+            );
+
+        $with_permissions = false;
+
+        if ($request->with_permissions == 'true') {
+            $with_permissions = true;
+        }
+
+        if ($with_permissions) {
+            $user = $user->with(
+                [
+                    'permissions' => function ($query) {
+                        $query->select('permissions.id', 'permissions.name');
+                    }
+                ]
+            );
+        }
+
+        $user = $user->first();
+        
+        if ($user) {
+            $user->toArray();
+        } else {
+            return jsonErrorResponse('User not found');
+        }
+        
+        return jsonSuccessResponse($user);
     }
  
     /**
@@ -96,7 +147,10 @@ class UserController extends Controller
      */
     protected function createUser(Request $request)
     {
-        if (auth()->user()->cannot('users.create')) {
+        $auth_user         = auth()->user();
+        $cant_create_users = userLacksPermission($auth_user, 'users.create');
+        
+        if ($cant_create_users) {
             return accessDenied('cannot create users');
         }
 
@@ -142,50 +196,82 @@ class UserController extends Controller
     }
 
     /**
-     * Return user details
+     * Update existing user details
+     * 
+     * @param Request $request HTTP request
+     * @param int     $user_id (Optional) Primary key of user of interest
+     *
+     * @return void
+     */
+    protected function updateUser(Request $request, $user_id = null)
+    {
+        $auth_user         = auth()->user();
+        $cant_update_users = userLacksPermission($auth_user, 'users.update');
+        
+        if ($cant_update_users) {
+            return accessDenied('cannot create users');
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            [ 
+                'name'       => 'required',
+                'email'      => "required|email|unique:users,email,$user_id",
+                'phone'      => 'required|numeric|digits_between:10,11',
+                'role_id'    => 'required|exists:roles,id',
+                'password'   => 'required', 
+            ]
+        );
+        
+        if ($validator->fails()) {
+            $errors = implode(' ', $validator->errors()->all());
+            
+            return jsonErrorResponse($errors);
+        }
+
+        DB::beginTransaction();
+
+        $request->merge(
+            [
+                'password' => Hash::make($request->password)
+            ]
+        );
+
+        $found_user = User::where('id', $user_id)->first();
+        $user_data = $request->except('_token');
+
+        if ($found_user->update($user_data)) {
+            DB::commit();
+            return jsonSuccessResponse();
+        }
+        
+        return jsonErrorResponse('Unable to update user');
+    }
+
+    /**
+     * Delete a user
      * 
      * @param Request $request HTTP request
      * @param int     $user_id Primary key of user of interest
      *
      * @return void
      */
-    protected function viewUserDetails(Request $request, $user_id)
+    protected function deleteUser(Request $request, $user_id = null)
     {
-        if (auth()->user()->cannot('users.view')) {
-            return accessDenied('cannot view users');
+        $auth_user         = auth()->user();
+        $cant_delete_users = userLacksPermission($auth_user, 'users.delete');
+        
+        if ($cant_delete_users) {
+            return accessDenied('cannot delete users');
         }
-
-        $user = User::orderBy('name')
-            ->join('roles', 'roles.id', 'users.role_id')
-            ->where('users.id', $user_id)
-            ->selectRaw(
-                'users.id, users.name, role_id, roles.name AS role_name'
-            );
-
-        $with_permissions = false;
-
-        if ($request->with_permissions == 'true') {
-            $with_permissions = true;
-        }
-
-        if ($with_permissions) {
-            $user = $user->with(
-                [
-                    'permissions' => function ($query) {
-                        $query->select('permissions.id', 'permissions.name');
-                    }
-                ]
-            );
-        }
-
-        $user = $user->first();
+        $user = User::where('id', $user_id)->first();
         
         if ($user) {
-            $user->toArray();
+            $user->delete();
         } else {
             return jsonErrorResponse('User not found');
         }
         
-        return jsonSuccessResponse($user);
+        return jsonSuccessResponse();
     }
 }
