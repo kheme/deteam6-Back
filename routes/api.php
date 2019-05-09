@@ -46,7 +46,7 @@ Route::middleware('auth:api')->prefix('app')->group(
                     'Frontend\UserController@createUser'
                 );
 
-                Route::put(
+                Route::patch(
                     '{user_id}',
                     'Frontend\UserController@updateUser'
                 );
@@ -75,7 +75,7 @@ Route::middleware('auth:api')->prefix('app')->group(
                     'Frontend\RollController@deleteRole'
                 );
                 
-                Route::put(
+                Route::patch(
                     '/',
                     'Frontend\RollController@createRole'
                 );
