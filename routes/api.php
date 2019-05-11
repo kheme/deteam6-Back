@@ -26,65 +26,7 @@ use Illuminate\Http\Request;
 
 Route::get('/', 'HomeController@showHomepage');
 
-Route::post('app/login', 'Frontend\AccessController@doLogin');
-
-Route::middleware('auth:api')->prefix('app')->group(
-    function () {
-        Route::get('/', 'Frontend\AccessController@showData');
-        
-        Route::post('logout', 'Frontend\AccessController@doLogout');
-        
-        Route::middleware('auth:api')->prefix('users')->group(
-            function () {
-                Route::get(
-                    '{user_id?}',
-                    'Frontend\UserController@viewUsers'
-                );
-                
-                Route::post(
-                    '/',
-                    'Frontend\UserController@createUser'
-                );
-
-                Route::patch(
-                    '{user_id}',
-                    'Frontend\UserController@updateUser'
-                );
-
-                Route::delete(
-                    '{user_id}',
-                    'Frontend\UserController@deleteUser'
-                );
-            }
-        );
-
-        Route::middleware('auth:api')->prefix('roles')->group(
-            function () {
-                Route::get(
-                    '{role_id?}',
-                    'Frontend\RollController@viewRoles'
-                );
-
-                Route::post(
-                    '{role_id}',
-                    'Frontend\RollController@updateRole'
-                );
-
-                Route::delete(
-                    '{role_id}',
-                    'Frontend\RollController@deleteRole'
-                );
-                
-                Route::patch(
-                    '/',
-                    'Frontend\RollController@createRole'
-                );
-                
-                Route::get(
-                    '{role_id}/permissions',
-                    'Frontend\RollController@viewRolePermissions'
-                );
-            }
-        );
-    }
-);
+Route::get('gender', 'DashboardController@gender');
+Route::get('user_agents', 'DashboardController@userAgents');
+Route::get('referer', 'DashboardController@referer');
+Route::get('sites', 'DashboardController@sites');

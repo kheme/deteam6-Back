@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b30fe745083e8608010c8987ab3baa9d",
+    "content-hash": "08c14897ef678733c63df3e95449fc9f",
     "packages": [
         {
             "name": "bugsnag/bugsnag",
@@ -3690,6 +3690,50 @@
                 "environment"
             ],
             "time": "2019-03-06T09:39:45+00:00"
+        },
+        {
+            "name": "watson/rememberable",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dwightwatson/rememberable.git",
+                "reference": "f3451ed6c4f9b902e1d1b3817dc62508c6b16d90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dwightwatson/rememberable/zipball/f3451ed6c4f9b902e1d1b3817dc62508c6b16d90",
+                "reference": "f3451ed6c4f9b902e1d1b3817dc62508c6b16d90",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "~5.0",
+                "illuminate/support": "~5.0",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Watson\\Rememberable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dwight Watson",
+                    "email": "dwight@studiousapp.com"
+                }
+            ],
+            "description": "Query caching for Laravel 5",
+            "keywords": [
+                "caching",
+                "eloquent",
+                "laravel",
+                "remember"
+            ],
+            "time": "2019-02-27T03:32:43+00:00"
         },
         {
             "name": "zendframework/zend-diactoros",
